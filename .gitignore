@@ -1,0 +1,32 @@
+
+# Compilação .NET
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+
+# Logs e arquivos temporários
+*.log
+*.tmp
+*.cache
+
+# Configurações locais e segredos
+.env
+.env.*
+!.env.example
+secrets.json
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
