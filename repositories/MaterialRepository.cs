@@ -4,40 +4,34 @@ namespace BibliotecaApi.Repositories;
 
 public class MaterialRepository : IMaterialRepository
 {
-    private readonly Dictionary<int, MaterialBiblioteca> _materiais;
-
-    private int _ultimoId;
+    private readonly Dictionary<int, MaterialBiblioteca> _materiais = new();
 
     public MaterialRepository()
     {
-        _materiais = new Dictionary<int, MaterialBiblioteca>
         {
-            [1] = new Livro
+            Adicionar(new Livro
             {
-                Id = 1,
+                Titulo = "O Senhor dos Anéis",
+                Autor = "J.R.R. Tolkien",
+                AnoPublicacao = 1954,
+                Paginas = 1216
+            });
+            Adicionar(new Livro
+            {
                 Titulo = "Clean Code",
-                AnoPublicacao = 2008,
                 Autor = "Robert C. Martin",
+                AnoPublicacao = 2008,
                 Paginas = 464
-            },
-
-            [2] = new Revista
-            {
-                Id = 2,
-                Titulo = "Tecnologia e Inovação",
-                AnoPublicacao = 2026,
-                Edicao = 15,
-                MesPublicacao = 11
-            }
+            });
         };
-
-        _ultimoId = 2;
     }
 
     private int GerarNovoId()
     {
-        _ultimoId++;
-        return _ultimoId;
+        if (_materiais.Count == 0)
+            return 1;
+        
+        return _materiais.Keys.Max() + 1;
     }
 
     public IEnumerable<MaterialBiblioteca> ObterTodos()
@@ -47,17 +41,15 @@ public class MaterialRepository : IMaterialRepository
 
     public MaterialBiblioteca? ObterPorId(int id)
     {
-        _materiais.TryGetValue(id, out var material);
+        return _materiais.TryGetValue(id, out var material) ? material : null;
 
-        return material;
     }
 
     public MaterialBiblioteca Adicionar(MaterialBiblioteca material)
     {
-        material.Id = GerarNovoId();
-
-        _materiais.Add(material.Id, material);
-
+        int novoId = GerarNovoId();
+        material.Id = novoId;
+        _materiais[novoId] = material;
         return material;
     }
 
@@ -67,9 +59,7 @@ public class MaterialRepository : IMaterialRepository
             return false;
 
         material.Id = id;
-
         _materiais[id] = material;
-
         return true;
     }
 
