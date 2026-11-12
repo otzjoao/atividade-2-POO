@@ -185,13 +185,15 @@ public class MateriaisController : ControllerBase
         var material = _repository.ObterPorId(id);
 
         if (material == null)
+        {
             return NotFound("Material não encontrado.");
+        }
 
         if (material is not IEmprestimo emprestimo)
-            return BadRequest(
-                "Este material não possui capacidade de empréstimo."
-            );
-
-        return Ok(emprestimo.Emprestar());
+        {
+            return BadRequest(new {mensagem = "Este material não possui capacidade de empréstimo."});
+        }
+        string mensagem = emprestimo.Emprestar();
+        return Ok(mensagem);
     }
 }

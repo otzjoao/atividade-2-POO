@@ -13,6 +13,6 @@ public class Revista : MaterialBiblioteca
 
     public override string Descricao()
     {
-        return $"Revista: {Titulo}, Edição: {Edicao}, Mês de Publicação: {MesPublicacao}, Ano: {AnoPublicacao}";
+        return $"Revista: {Titulo} - Edição: {Edicao}";
     }
 }

@@ -2,20 +2,17 @@ using BibliotecaApi.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// CONFIGURAÇÃO DOS CONTROLLERS
+// Add services to the container.
 builder.Services.AddControllers();
 
-// CONFIGURAÇÃO DO SWAGGER
+// Configuração do Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// INJEÇÃO DE DEPENDÊNCIA COM SINGLETON
-builder.Services.AddSingleton<
-    IMaterialRepository,
-    MaterialRepository
->();
+// Injeção de dependência: Repository registrado como Singleton
+builder.Services.AddSingleton<IMaterialRepository, MaterialRepository>();
 
-// CONFIGURAÇÃO DO CORS
+// Configuração do CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirFrontend", policy =>
@@ -28,17 +25,18 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// SWAGGER
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// HTTPS
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
-// CORS
 app.UseCors("PermitirFrontend");
 
-// MAPEAMENTO DOS CONTROLLERS
+app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
