@@ -50,6 +50,15 @@ public class MateriaisController : ControllerBase
         if (livro.Paginas <= 0)
             return BadRequest("O número de páginas deve ser maior que zero.");
 
+        if (string.IsNullOrWhiteSpace(livro.ISBN))
+        return BadRequest("O ISBN é obrigatório.");
+
+        if (string.IsNullOrWhiteSpace(livro.Editora))
+        return BadRequest("A editora é obrigatória.");
+
+        if (string.IsNullOrWhiteSpace(livro.Categoria))
+        return BadRequest("A categoria é obrigatória.");
+
         var cadastrado = _repository.Adicionar(livro);
 
         return CreatedAtAction(
@@ -75,6 +84,16 @@ public class MateriaisController : ControllerBase
         if (revista.MesPublicacao < 1 ||
             revista.MesPublicacao > 12)
             return BadRequest("O mês deve estar entre 1 e 12.");
+
+
+        if (string.IsNullOrWhiteSpace(revista.ISSN))
+        return BadRequest("O ISSN é obrigatório.");
+
+        if (string.IsNullOrWhiteSpace(revista.Editora))
+        return BadRequest("A editora é obrigatória.");
+
+        if (string.IsNullOrWhiteSpace(revista.Categoria))
+        return BadRequest("A categoria é obrigatória.");
 
         var cadastrado = _repository.Adicionar(revista);
 
@@ -109,6 +128,15 @@ public class MateriaisController : ControllerBase
         if (livro.Paginas <= 0)
             return BadRequest("O número de páginas deve ser maior que zero.");
 
+        if (string.IsNullOrWhiteSpace(livro.ISBN))
+        return BadRequest("O ISBN é obrigatório.");
+
+        if (string.IsNullOrWhiteSpace(livro.Editora))
+        return BadRequest("A editora é obrigatória.");
+
+        if (string.IsNullOrWhiteSpace(livro.Categoria))
+        return BadRequest("A categoria é obrigatória.");
+
         livro.Id = id;
 
         _repository.Atualizar(id, livro);
@@ -140,6 +168,16 @@ public class MateriaisController : ControllerBase
         if (revista.MesPublicacao < 1 ||
             revista.MesPublicacao > 12)
             return BadRequest("O mês deve estar entre 1 e 12.");
+
+
+        if (string.IsNullOrWhiteSpace(revista.ISSN))
+        return BadRequest("O ISSN é obrigatório.");
+
+        if (string.IsNullOrWhiteSpace(revista.Editora))
+        return BadRequest("A editora é obrigatória.");
+
+        if (string.IsNullOrWhiteSpace(revista.Categoria))
+        return BadRequest("A categoria é obrigatória.");
 
         revista.Id = id;
 
