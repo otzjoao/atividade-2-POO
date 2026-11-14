@@ -7,24 +7,40 @@ public class MaterialRepository : IMaterialRepository
     private readonly Dictionary<int, MaterialBiblioteca> _materiais = new();
 
     public MaterialRepository()
+{
+    Adicionar(new Livro
     {
-        {
-            Adicionar(new Livro
-            {
-                Titulo = "O Senhor dos Anéis",
-                Autor = "J.R.R. Tolkien",
-                AnoPublicacao = 1954,
-                Paginas = 1216
-            });
-            Adicionar(new Livro
-            {
-                Titulo = "Clean Code",
-                Autor = "Robert C. Martin",
-                AnoPublicacao = 2008,
-                Paginas = 464
-            });
-        };
-    }
+        Titulo = "O Senhor dos Anéis",
+        Autor = "J.R.R. Tolkien",
+        AnoPublicacao = 1954,
+        Paginas = 1216,
+        ISBN = "9780544003415",
+        Editora = "HarperCollins",
+        Categoria = "Fantasia"
+    });
+
+    Adicionar(new Livro
+    {
+        Titulo = "Clean Code",
+        Autor = "Robert C. Martin",
+        AnoPublicacao = 2008,
+        Paginas = 464,
+        ISBN = "9780132350884",
+        Editora = "Prentice Hall",
+        Categoria = "Programação"
+    });
+
+    Adicionar(new Revista
+    {
+        Titulo = "Revista de Tecnologia",
+        AnoPublicacao = 2026,
+        Edicao = 20,
+        MesPublicacao = 11,
+        ISSN = "1516-3270",
+        Editora = "Editora Exemplo",
+        Categoria = "Tecnologia"
+    });
+}
 
     private int GerarNovoId()
     {
