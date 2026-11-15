@@ -170,6 +170,82 @@ Content-Type: application/json
 
 Resposta esperada: `201 Created`.
 
+## Exemplos de testes
+
+Os endpoints podem ser testados pelo Swagger, acessando `/swagger` após iniciar a aplicação, ou por ferramentas como Postman e `curl`.
+
+### 1. Listar materiais
+
+```bash
+curl -X GET "http://localhost:5000/api/Materiais"
+```
+
+### 2. Consultar material por ID
+
+```bash
+curl -X GET "http://localhost:5000/api/Materiais/1"
+```
+
+### 3. Cadastrar um livro
+
+```bash
+curl -X POST "http://localhost:5000/api/Materiais/livro" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "titulo": "Clean Code",
+    "anoPublicacao": 2008,
+    "autor": "Robert C. Martin",
+    "paginas": 464,
+    "isbn": "9780132350884",
+    "editora": "Prentice Hall",
+    "categoria": "Tecnologia"
+  }'
+```
+
+### 4. Cadastrar uma revista
+
+```bash
+curl -X POST "http://localhost:5000/api/Materiais/revista" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "titulo": "Revista de Tecnologia",
+    "anoPublicacao": 2025,
+    "edicao": 10,
+    "mesPublicacao": 6,
+    "issn": "1234-5678",
+    "editora": "Editora Tech",
+    "categoria": "Tecnologia"
+  }'
+```
+
+### 5. Testar validação com dados inválidos
+
+Envie um cadastro com campos obrigatórios ausentes ou valores inválidos. A API deverá retornar `400 Bad Request`, conforme as validações implementadas.
+
+```bash
+curl -X POST "http://localhost:5000/api/Materiais/livro" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "titulo": "",
+    "anoPublicacao": -1,
+    "autor": "",
+    "paginas": 0,
+    "isbn": "",
+    "editora": "",
+    "categoria": ""
+  }'
+```
+
+### 6. Consultar um ID inexistente
+
+```bash
+curl -X GET "http://localhost:5000/api/Materiais/9999"
+```
+
+Resultado esperado: `404 Not Found`, caso não exista material com esse identificador.
+
+> **Importante:** os exemplos utilizam a porta `5000` como referência. Substitua-a pela porta informada no terminal ao executar a aplicação. Os IDs utilizados nos testes também devem corresponder aos materiais cadastrados na execução atual.
+
 ## Respostas HTTP
 
 A API utiliza os seguintes códigos HTTP para indicar o resultado das operações:
@@ -250,10 +326,10 @@ Projeto desenvolvido de forma colaborativa, utilizando Git e GitHub para control
 
 **Integrantes:**
 
-- Gustavo
-- Vinicius
-- Ryan
-- João Ortiz
+- Gustavo dos Santos Guimarães 114.049
+- Vinicius Durau Ferreira 114.125
+- Ryan Soler de Lima de Souza 114.038
+- João Victor dos Santos Ortiz 114.055
 
 ## Objetivos acadêmicos
 
