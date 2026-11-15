@@ -34,6 +34,15 @@ public class MateriaisController : ControllerBase
 
         if (ano.HasValue && ano.Value <= 0)
             return BadRequest("Ano de publicação inválido.");
+        
+         // VALIDAR PAGINAÇÃO
+        if (pagina < 1)
+            return BadRequest("A página deve ser maior ou igual a 1.");
+
+        if (quantidade < 1 || quantidade > 100)
+        {
+            return BadRequest("A quantidade deve estar entre 1 e 100.");
+        }
 
         return Ok(_repository.ObterTodos(titulo, tipo, ano, pagina, quantidade));
     }
