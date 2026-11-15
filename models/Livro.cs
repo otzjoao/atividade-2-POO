@@ -2,9 +2,15 @@ namespace BibliotecaApi.Models;
 
 public class Livro : MaterialBiblioteca, IEmprestimo
 {
-    public string Autor {get; set;} = string.Empty;
+    public string Autor { get; set; } = string.Empty;
 
-    public int Paginas {get; set;}
+    public int Paginas { get; set; }
+
+    public string ISBN { get; set; } = string.Empty;
+
+    public string Editora { get; set; } = string.Empty;
+
+    public string Categoria { get; set; } = string.Empty;
 
     public override int CalcularPrazo()
     {
@@ -13,7 +19,9 @@ public class Livro : MaterialBiblioteca, IEmprestimo
 
     public override string Descricao()
     {
-        return $"Livro: {Titulo}, Autor: {Autor}, Ano: {AnoPublicacao}, Páginas: {Paginas}";
+        return $"Livro: {Titulo}, Autor: {Autor}, Ano: {AnoPublicacao}, " +
+               $"Páginas: {Paginas}, ISBN: {ISBN}, " +
+               $"Editora: {Editora}, Categoria: {Categoria}";
     }
 
     public string Emprestar()

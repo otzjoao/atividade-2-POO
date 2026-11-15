@@ -15,40 +15,133 @@ public class MateriaisController : ControllerBase
         _repository = repository;
     }
 
-    // LISTAR TODOS OS MATERIAIS
-    [HttpGet]
-    public IActionResult ObterTodos()
+
+// LISTAR MATERIAIS COM FILTROS E PAGINAÇÃO
+// Ex: GET /api/Materiais?titulo=Clean&tipo=Livro&ano=2008&pagina=1&quantidade=5
+[HttpGet]
+public IActionResult ObterTodos(
+    [FromQuery] string? titulo = null,
+    [FromQuery] string? tipo = null,
+    [FromQuery] int? ano = null,
+    [FromQuery] int pagina = 1,
+    [FromQuery] int quantidade = 10)
+{
+    if (!string.IsNullOrWhiteSpace(tipo) &&
+        !tipo.Equals("Livro", StringComparison.OrdinalIgnoreCase) &&
+        !tipo.Equals("Revista", StringComparison.OrdinalIgnoreCase))
     {
-        return Ok(_repository.ObterTodos());
+        return Problem(
+            detail: "Tipo de material inválido. Use 'Livro' ou 'Revista'.",
+            statusCode: 400,
+            title: "Dados inválidos"
+        );
     }
 
-    // BUSCAR MATERIAL PELO ID
-    [HttpGet("{id:int}")]
-    public IActionResult ObterPorId(int id)
+    if (ano.HasValue && ano.Value <= 0)
     {
-        var material = _repository.ObterPorId(id);
-
-        if (material == null)
-            return NotFound("Material não encontrado.");
-
-        return Ok(material);
+        return Problem(
+            detail: "Ano de publicação inválido.",
+            statusCode: 400,
+            title: "Dados inválidos"
+        );
     }
+
+    // VALIDAR PAGINAÇÃO
+    if (pagina < 1)
+    {
+        return Problem(
+            detail: "A página deve ser maior ou igual a 1.",
+            statusCode: 400,
+            title: "Dados inválidos"
+        );
+    }
+
+    if (quantidade < 1 || quantidade > 100)
+    {
+        return Problem(
+            detail: "A quantidade deve estar entre 1 e 100.",
+            statusCode: 400,
+            title: "Dados inválidos"
+        );
+    }
+
+    return Ok(_repository.ObterTodos(titulo, tipo, ano, pagina, quantidade));
+}
+
+
+
+ // BUSCAR MATERIAL PELO ID
+ [HttpGet("{id:int}")]
+ public IActionResult ObterPorId(int id)
+ {
+     var material = _repository.ObterPorId(id);
+
+     if (material == null)
+     {
+         return Problem(
+             detail: "Material não encontrado.",
+             statusCode: 404,
+             title: "Material não encontrado"
+         );
+     }
+
+     return Ok(material);
+ }
+
+
 
     // CADASTRAR LIVRO
     [HttpPost("livro")]
     public IActionResult CadastrarLivro([FromBody] Livro livro)
     {
         if (string.IsNullOrWhiteSpace(livro.Titulo))
-            return BadRequest("O título é obrigatório.");
+            return Problem(
+                detail: "O título é obrigatório.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (livro.AnoPublicacao < 0)
-            return BadRequest("Ano de publicação inválido.");
+            return Problem(
+                detail: "Ano de publicação inválido.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (string.IsNullOrWhiteSpace(livro.Autor))
-            return BadRequest("O autor é obrigatório.");
+            return Problem(
+                detail: "O autor é obrigatório.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (livro.Paginas <= 0)
-            return BadRequest("O número de páginas deve ser maior que zero.");
+            return Problem(
+                detail: "O número de páginas deve ser maior que zero.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
+
+        if (string.IsNullOrWhiteSpace(livro.ISBN))
+            return Problem(
+                detail: "O ISBN é obrigatório.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
+
+        if (string.IsNullOrWhiteSpace(livro.Editora))
+            return Problem(
+                detail: "A editora é obrigatória.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
+
+        if (string.IsNullOrWhiteSpace(livro.Categoria))
+            return Problem(
+                detail: "A categoria é obrigatória.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         var cadastrado = _repository.Adicionar(livro);
 
@@ -59,22 +152,61 @@ public class MateriaisController : ControllerBase
         );
     }
 
+
+
     // CADASTRAR REVISTA
     [HttpPost("revista")]
     public IActionResult CadastrarRevista([FromBody] Revista revista)
     {
         if (string.IsNullOrWhiteSpace(revista.Titulo))
-            return BadRequest("O título é obrigatório.");
+            return Problem(
+                detail: "O título é obrigatório.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (revista.AnoPublicacao < 0)
-            return BadRequest("Ano de publicação inválido.");
+            return Problem(
+                detail: "Ano de publicação inválido.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (revista.Edicao <= 0)
-            return BadRequest("A edição deve ser maior que zero.");
+            return Problem(
+                detail: "A edição deve ser maior que zero.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (revista.MesPublicacao < 1 ||
             revista.MesPublicacao > 12)
-            return BadRequest("O mês deve estar entre 1 e 12.");
+            return Problem(
+                detail: "O mês deve estar entre 1 e 12.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
+
+        if (string.IsNullOrWhiteSpace(revista.ISSN))
+            return Problem(
+                detail: "O ISSN é obrigatório.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
+
+        if (string.IsNullOrWhiteSpace(revista.Editora))
+            return Problem(
+                detail: "A editora é obrigatória.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
+
+        if (string.IsNullOrWhiteSpace(revista.Categoria))
+            return Problem(
+                detail: "A categoria é obrigatória.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         var cadastrado = _repository.Adicionar(revista);
 
@@ -85,6 +217,8 @@ public class MateriaisController : ControllerBase
         );
     }
 
+
+
     // ATUALIZAR LIVRO
     [HttpPut("livro/{id:int}")]
     public IActionResult AtualizarLivro(int id, [FromBody] Livro livro)
@@ -92,22 +226,67 @@ public class MateriaisController : ControllerBase
         var existente = _repository.ObterPorId(id);
 
         if (existente == null)
-            return NotFound("Livro não encontrado.");
+            return Problem(
+                detail: "Livro não encontrado.",
+                statusCode: 404,
+                title: "Livro não encontrado"
+            );
 
         if (existente is not Livro)
-            return BadRequest("O material informado não é um livro.");
+            return Problem(
+                detail: "O material informado não é um livro.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (string.IsNullOrWhiteSpace(livro.Titulo))
-            return BadRequest("O título é obrigatório.");
+            return Problem(
+                detail: "O título é obrigatório.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (livro.AnoPublicacao < 0)
-            return BadRequest("Ano de publicação inválido.");
+            return Problem(
+                detail: "Ano de publicação inválido.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (string.IsNullOrWhiteSpace(livro.Autor))
-            return BadRequest("O autor é obrigatório.");
+            return Problem(
+                detail: "O autor é obrigatório.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (livro.Paginas <= 0)
-            return BadRequest("O número de páginas deve ser maior que zero.");
+            return Problem(
+                detail: "O número de páginas deve ser maior que zero.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
+
+        if (string.IsNullOrWhiteSpace(livro.ISBN))
+            return Problem(
+                detail: "O ISBN é obrigatório.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
+
+        if (string.IsNullOrWhiteSpace(livro.Editora))
+            return Problem(
+                detail: "A editora é obrigatória.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
+
+        if (string.IsNullOrWhiteSpace(livro.Categoria))
+            return Problem(
+                detail: "A categoria é obrigatória.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         livro.Id = id;
 
@@ -116,6 +295,8 @@ public class MateriaisController : ControllerBase
         return Ok(livro);
     }
 
+
+
     // ATUALIZAR REVISTA
     [HttpPut("revista/{id:int}")]
     public IActionResult AtualizarRevista(int id, [FromBody] Revista revista)
@@ -123,23 +304,68 @@ public class MateriaisController : ControllerBase
         var existente = _repository.ObterPorId(id);
 
         if (existente == null)
-            return NotFound("Revista não encontrada.");
+            return Problem(
+                detail: "Revista não encontrada.",
+                statusCode: 404,
+                title: "Revista não encontrada"
+            );
 
         if (existente is not Revista)
-            return BadRequest("O material informado não é uma revista.");
+            return Problem(
+                detail: "O material informado não é uma revista.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (string.IsNullOrWhiteSpace(revista.Titulo))
-            return BadRequest("O título é obrigatório.");
+            return Problem(
+                detail: "O título é obrigatório.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (revista.AnoPublicacao < 0)
-            return BadRequest("Ano de publicação inválido.");
+            return Problem(
+                detail: "Ano de publicação inválido.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (revista.Edicao <= 0)
-            return BadRequest("A edição deve ser maior que zero.");
+            return Problem(
+                detail: "A edição deve ser maior que zero.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (revista.MesPublicacao < 1 ||
             revista.MesPublicacao > 12)
-            return BadRequest("O mês deve estar entre 1 e 12.");
+            return Problem(
+                detail: "O mês deve estar entre 1 e 12.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
+
+        if (string.IsNullOrWhiteSpace(revista.ISSN))
+            return Problem(
+                detail: "O ISSN é obrigatório.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
+
+        if (string.IsNullOrWhiteSpace(revista.Editora))
+            return Problem(
+                detail: "A editora é obrigatória.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
+
+        if (string.IsNullOrWhiteSpace(revista.Categoria))
+            return Problem(
+                detail: "A categoria é obrigatória.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         revista.Id = id;
 
@@ -148,50 +374,74 @@ public class MateriaisController : ControllerBase
         return Ok(revista);
     }
 
-    // EXCLUIR MATERIAL
-    [HttpDelete("{id:int}")]
-    public IActionResult Remover(int id)
+
+// EXCLUIR MATERIAL
+[HttpDelete("{id:int}")]
+public IActionResult Remover(int id)
+{
+    bool removido = _repository.Remover(id);
+
+    if (!removido)
     {
-        bool removido = _repository.Remover(id);
-
-        if (!removido)
-            return NotFound("Material não encontrado.");
-
-        return NoContent();
+        return Problem(
+            detail: "Material não encontrado.",
+            statusCode: 404,
+            title: "Material não encontrado"
+        );
     }
 
-    // CONSULTAR DESCRIÇÃO E PRAZO
-    [HttpGet("{id:int}/descricao")]
-    public IActionResult ObterDescricao(int id)
+    return NoContent();
+}
+
+// CONSULTAR DESCRIÇÃO E PRAZO
+[HttpGet("{id:int}/descricao")]
+public IActionResult ObterDescricao(int id)
+{
+    var material = _repository.ObterPorId(id);
+
+    if (material == null)
     {
-        var material = _repository.ObterPorId(id);
-
-        if (material == null)
-            return NotFound("Material não encontrado.");
-
-        return Ok(new
-        {
-            id = material.Id,
-            tipo = material.GetType().Name,
-            descricao = material.Descricao(),
-            prazoEmprestimo = material.CalcularPrazo()
-        });
+        return Problem(
+            detail: "Material não encontrado.",
+            statusCode: 404,
+            title: "Material não encontrado"
+        );
     }
 
-    // REALIZAR EMPRÉSTIMO
-    [HttpPost("{id:int}/emprestar")]
-    public IActionResult Emprestar(int id)
+    return Ok(new
     {
-        var material = _repository.ObterPorId(id);
+        id = material.Id,
+        tipo = material.GetType().Name,
+        descricao = material.Descricao(),
+        prazoEmprestimo = material.CalcularPrazo()
+    });
+}
 
-        if (material == null)
-            return NotFound("Material não encontrado.");
+// REALIZAR EMPRÉSTIMO
+[HttpPost("{id:int}/emprestar")]
+public IActionResult Emprestar(int id)
+{
+    var material = _repository.ObterPorId(id);
 
-        if (material is not IEmprestimo emprestimo)
-            return BadRequest(
-                "Este material não possui capacidade de empréstimo."
-            );
-
-        return Ok(emprestimo.Emprestar());
+    if (material == null)
+    {
+        return Problem(
+            detail: "Material não encontrado.",
+            statusCode: 404,
+            title: "Material não encontrado"
+        );
     }
+
+    if (material is not IEmprestimo emprestimo)
+    {
+        return Problem(
+            detail: "Este material não possui capacidade de empréstimo.",
+            statusCode: 400,
+            title: "Dados inválidos"
+        );
+    }
+
+    string mensagem = emprestimo.Emprestar();
+    return Ok(mensagem);
+}
 }
