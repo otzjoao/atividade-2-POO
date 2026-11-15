@@ -1,33 +1,29 @@
-# Atividade 2 POO
-# 📚 Sistema de Gerenciamento de Biblioteca Universitária
+# Sistema de Gerenciamento de Biblioteca Universitária
 
 <p align="center">
-  <strong>API REST desenvolvida em C# com ASP.NET Core</strong>
-  <br/>
+  <strong>API REST desenvolvida em C# com ASP.NET Core</strong><br>
   Projeto acadêmico de Programação Orientada a Objetos (POO)
 </p>
 
 ---
 
-## 📖 Sobre o projeto
+## Sobre o projeto
 
-O **Sistema de Gerenciamento de Biblioteca Universitária** é uma API REST desenvolvida com C# e ASP.NET Core, com o objetivo de gerenciar materiais de uma biblioteca, como livros e revistas.
+O **Sistema de Gerenciamento de Biblioteca Universitária** é uma API REST desenvolvida com C# e ASP.NET Core para gerenciar materiais de uma biblioteca, como livros e revistas.
 
-O projeto foi desenvolvido para aplicar, na prática, os principais conceitos de Programação Orientada a Objetos, além de padrões de projeto e boas práticas de desenvolvimento de APIs.
+O projeto aplica conceitos de Programação Orientada a Objetos, padrões de projeto e boas práticas de desenvolvimento de APIs.
 
-A aplicação permite cadastrar, consultar, atualizar e remover materiais, além de disponibilizar funcionalidades específicas, como descrição dos materiais e regras de empréstimo.
+A aplicação permite cadastrar, consultar, atualizar e remover materiais. Também disponibiliza funcionalidades para consultar a descrição de um material e solicitar seu empréstimo.
 
-## 🚀 Tecnologias utilizadas
+## Tecnologias utilizadas
 
-- **C#** — Linguagem de programação.
-- **.NET 10** — Plataforma de desenvolvimento.
-- **ASP.NET Core Web API** — Construção dos endpoints REST.
-- **Swagger / OpenAPI** — Documentação e testes da API.
-- **Git e GitHub** — Versionamento e colaboração em equipe.
+- **C#** — linguagem de programação.
+- **.NET 10** — plataforma de desenvolvimento.
+- **ASP.NET Core Web API** — construção dos endpoints REST.
+- **Swagger / OpenAPI** — documentação e testes da API.
+- **Git e GitHub** — versionamento e colaboração em equipe.
 
-## 🧠 Conceitos de POO aplicados
-
-O projeto utiliza os principais pilares e recursos da Programação Orientada a Objetos:
+## Conceitos de POO aplicados
 
 | Conceito | Aplicação no projeto |
 |---|---|
@@ -38,23 +34,23 @@ O projeto utiliza os principais pilares e recursos da Programação Orientada a 
 | Interfaces | Contrato `IEmprestimo` |
 | Sobrescrita | Implementação de comportamentos nas subclasses |
 
-### 📚 Estrutura dos materiais
+### Estrutura dos materiais
 
 - **MaterialBiblioteca:** classe base abstrata para os materiais da biblioteca.
 - **Livro:** representa um livro e implementa a interface `IEmprestimo`.
-- **Revista:** representa uma revista, com suas características e regras específicas.
+- **Revista:** representa uma revista, com características e regras específicas.
 - **IEmprestimo:** define o contrato para materiais que possuem funcionalidade de empréstimo.
 
-### ⏱️ Regras de empréstimo
+### Regras de empréstimo
 
-- Livros: prazo de 14 dias.
-- Revistas: prazo de 7 dias.
+- **Livros:** prazo de 14 dias.
+- **Revistas:** prazo de 7 dias.
 
 A API utiliza a interface `IEmprestimo` para identificar os materiais que permitem a operação de empréstimo.
 
-## 🏗️ Arquitetura do projeto
+## Arquitetura do projeto
 
-O projeto utiliza o padrão Repository para separar as regras de acesso e manipulação dos materiais da camada responsável pelas requisições HTTP.
+O projeto utiliza o padrão Repository para separar o acesso e a manipulação dos materiais da camada responsável pelas requisições HTTP.
 
 ```text
 MinhaBiblioteca/
@@ -77,7 +73,7 @@ MinhaBiblioteca/
 └── README.md
 ```
 
-### 🔧 Repository Pattern
+### Repository Pattern
 
 A aplicação utiliza:
 
@@ -90,13 +86,11 @@ A injeção de dependência é configurada no `Program.cs`, utilizando o ciclo d
 
 > **Observação:** como o armazenamento é em memória, os dados cadastrados durante a execução não são persistidos após reiniciar a aplicação.
 
-## 🌐 Endpoints da API
-
-A API disponibiliza os seguintes endpoints:
+## Endpoints da API
 
 | Método | Rota | Descrição |
 |---|---|---|
-| GET | `/api/Materiais` | Lista todos os materiais |
+| GET | `/api/Materiais` | Lista materiais com filtros e paginação |
 | GET | `/api/Materiais/{id}` | Busca material por ID |
 | POST | `/api/Materiais/livro` | Cadastra um livro |
 | POST | `/api/Materiais/revista` | Cadastra uma revista |
@@ -106,48 +100,113 @@ A API disponibiliza os seguintes endpoints:
 | GET | `/api/Materiais/{id}/descricao` | Obtém a descrição de um material |
 | POST | `/api/Materiais/{id}/emprestar` | Solicita empréstimo de um material |
 
-## 🧪 Testando a API
+### Filtros e paginação
 
-A aplicação possui integração com Swagger, permitindo visualizar, executar e testar os endpoints diretamente pelo navegador.
+O endpoint `GET /api/Materiais` aceita os seguintes parâmetros:
 
-Após iniciar o projeto, acesse:
+| Parâmetro | Descrição | Padrão |
+|---|---|---|
+| `titulo` | Filtra pelo título ou parte dele | Sem filtro |
+| `tipo` | Filtra por Livro ou Revista | Sem filtro |
+| `ano` | Filtra pelo ano de publicação | Sem filtro |
+| `pagina` | Número da página | `1` |
+| `quantidade` | Registros por página (máximo de 100) | `10` |
+
+**Exemplo de requisição:**
+
+```http
+GET /api/Materiais?titulo=Clean&tipo=Livro&ano=2008&pagina=1&quantidade=5
+```
+
+## Exemplos de cadastro
+
+### Cadastro de livro
+
+**Requisição:**
+
+```http
+POST /api/Materiais/livro
+Content-Type: application/json
+```
+
+**Corpo JSON:**
+
+```json
+{
+  "titulo": "Clean Code",
+  "anoPublicacao": 2008,
+  "autor": "Robert C. Martin",
+  "paginas": 464,
+  "isbn": "9780132350884",
+  "editora": "Prentice Hall",
+  "categoria": "Tecnologia"
+}
+```
+
+Resposta esperada: `201 Created`.
+
+### Cadastro de revista
+
+**Requisição:**
+
+```http
+POST /api/Materiais/revista
+Content-Type: application/json
+```
+
+**Corpo JSON:**
+
+```json
+{
+  "titulo": "Revista de Tecnologia",
+  "anoPublicacao": 2025,
+  "edicao": 10,
+  "mesPublicacao": 6,
+  "issn": "1234-5678",
+  "editora": "Editora Tech",
+  "categoria": "Tecnologia"
+}
+```
+
+Resposta esperada: `201 Created`.
+
+## Respostas HTTP
+
+A API utiliza os seguintes códigos HTTP para indicar o resultado das operações:
+
+| Código | Significado |
+|---|---|
+| `200` | Operação realizada com sucesso |
+| `201` | Recurso criado com sucesso |
+| `204` | Operação concluída sem conteúdo de retorno |
+| `400` | Dados inválidos ou operação não permitida |
+| `404` | Material não encontrado |
+
+As respostas de erro seguem o padrão **ProblemDetails**, facilitando a identificação e o tratamento de erros pelos clientes da API.
+
+## Swagger / OpenAPI
+
+A aplicação possui integração com Swagger / OpenAPI, permitindo visualizar, executar e testar os endpoints diretamente pelo navegador.
+
+A documentação apresenta:
+
+- Descrição das operações.
+- Parâmetros de consulta e identificação.
+- Códigos HTTP possíveis.
+- Exemplos de requisição para cadastro de livros e revistas.
+- Modelos utilizados nas requisições e respostas.
+
+Após iniciar a aplicação, acesse `/swagger` no endereço local informado pelo terminal.
+
+Exemplo:
 
 ```text
 http://localhost:5000/swagger
 ```
 
-A porta pode variar conforme a configuração de execução exibida no terminal.
+> A porta pode variar conforme a configuração de execução exibida no terminal.
 
-### Exemplo de consulta
-
-Requisição:
-
-```http
-GET /api/Materiais
-```
-
-Exemplo de resposta:
-
-```json
-[
-  {
-    "id": 1,
-    "titulo": "Clean Code",
-    "anoPublicacao": 2008,
-    "tipo": "Livro"
-  },
-  {
-    "id": 2,
-    "titulo": "Tecnologia e Inovação",
-    "anoPublicacao": 2026,
-    "tipo": "Revista"
-  }
-]
-```
-
-*Os dados acima representam os materiais iniciais cadastrados no repositório.*
-
-## ⚙️ Como executar o projeto
+## Como executar o projeto
 
 ### Pré-requisitos
 
@@ -185,7 +244,7 @@ dotnet run
 
 Abra no navegador o endereço informado pelo terminal, acrescentando `/swagger`.
 
-## 👥 Desenvolvimento em equipe
+## Desenvolvimento em equipe
 
 Projeto desenvolvido de forma colaborativa, utilizando Git e GitHub para controle de versão, organização das branches e integração das implementações.
 
@@ -196,7 +255,7 @@ Projeto desenvolvido de forma colaborativa, utilizando Git e GitHub para control
 - Ryan
 - João Ortiz
 
-## 🎯 Objetivos acadêmicos
+## Objetivos acadêmicos
 
 - Aplicar os conceitos fundamentais de Programação Orientada a Objetos.
 - Desenvolver uma API REST utilizando ASP.NET Core.
@@ -208,5 +267,5 @@ Projeto desenvolvido de forma colaborativa, utilizando Git e GitHub para control
 ---
 
 <p align="center">
-  Desenvolvido com 💻 e ☕ para a disciplina de Programação Orientada a Objetos.
+  Desenvolvido para a disciplina de Programação Orientada a Objetos.
 </p>
