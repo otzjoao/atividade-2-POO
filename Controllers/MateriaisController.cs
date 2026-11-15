@@ -15,11 +15,27 @@ public class MateriaisController : ControllerBase
         _repository = repository;
     }
 
-    // LISTAR TODOS OS MATERIAIS
+    // LISTAR MATERIAIS COM FILTROS E PAGINAÇÃO
+    // Ex: GET /api/Materiais?titulo=Clean&tipo=Livro&ano=2008&pagina=1&quantidade=5
     [HttpGet]
-    public IActionResult ObterTodos()
+    public IActionResult ObterTodos(
+        [FromQuery] string? titulo = null,
+        [FromQuery] string? tipo = null,
+        [FromQuery] int? ano = null,
+        [FromQuery] int pagina = 1,
+        [FromQuery] int quantidade = 10)
     {
-        return Ok(_repository.ObterTodos());
+        if (!string.IsNullOrWhiteSpace(tipo) &&
+            !tipo.Equals("Livro", StringComparison.OrdinalIgnoreCase) &&
+            !tipo.Equals("Revista", StringComparison.OrdinalIgnoreCase))
+        {
+            return BadRequest("Tipo de material inválido. Use 'Livro' ou 'Revista'.");
+        }
+
+        if (ano.HasValue && ano.Value <= 0)
+            return BadRequest("Ano de publicação inválido.");
+
+        return Ok(_repository.ObterTodos(titulo, tipo, ano, pagina, quantidade));
     }
 
     // BUSCAR MATERIAL PELO ID

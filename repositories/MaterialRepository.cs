@@ -50,9 +50,48 @@ public class MaterialRepository : IMaterialRepository
         return _materiais.Keys.Max() + 1;
     }
 
-    public IEnumerable<MaterialBiblioteca> ObterTodos()
+    public ResultadoPaginado<MaterialBiblioteca> ObterTodos(
+        string? titulo = null,
+        string? tipo = null,
+        int? ano = null,
+        int pagina = 1,
+        int quantidade = 10)
     {
-        return _materiais.Values;
+        var filtrados = _materiais.Values.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(titulo))
+            filtrados = filtrados.Where(m =>
+                m.Titulo.Contains(titulo.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        if (!string.IsNullOrWhiteSpace(tipo))
+            filtrados = filtrados.Where(m =>
+                m.GetType().Name.Equals(tipo.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        if (ano.HasValue)
+            filtrados = filtrados.Where(m => m.AnoPublicacao == ano.Value);
+
+        var lista = filtrados.OrderBy(m => m.Id).ToList();
+        int totalItens = lista.Count;
+
+        if (pagina < 1) pagina = 1;
+        if (quantidade < 1) quantidade = 10;
+        if (quantidade > 100) quantidade = 100;
+
+        int totalPaginas = (int)Math.Ceiling(totalItens / (double)quantidade);
+
+        var itens = lista
+            .Skip((pagina - 1) * quantidade)
+            .Take(quantidade)
+            .ToList();
+
+        return new ResultadoPaginado<MaterialBiblioteca>
+        {
+            Itens = itens,
+            TotalItens = totalItens,
+            Pagina = pagina,
+            Quantidade = quantidade,
+            TotalPaginas = totalPaginas
+        };
     }
 
     public MaterialBiblioteca? ObterPorId(int id)
