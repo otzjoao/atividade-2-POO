@@ -73,10 +73,6 @@ public class MaterialRepository : IMaterialRepository
         var lista = filtrados.OrderBy(m => m.Id).ToList();
         int totalItens = lista.Count;
 
-        if (pagina < 1) pagina = 1;
-        if (quantidade < 1) quantidade = 10;
-        if (quantidade > 100) quantidade = 100;
-
         int totalPaginas = (int)Math.Ceiling(totalItens / (double)quantidade);
 
         var itens = lista
