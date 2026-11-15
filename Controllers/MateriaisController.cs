@@ -15,37 +15,59 @@ public class MateriaisController : ControllerBase
         _repository = repository;
     }
 
-    // LISTAR MATERIAIS COM FILTROS E PAGINAÇÃO
-    // Ex: GET /api/Materiais?titulo=Clean&tipo=Livro&ano=2008&pagina=1&quantidade=5
-    [HttpGet]
-    public IActionResult ObterTodos(
-        [FromQuery] string? titulo = null,
-        [FromQuery] string? tipo = null,
-        [FromQuery] int? ano = null,
-        [FromQuery] int pagina = 1,
-        [FromQuery] int quantidade = 10)
+
+// LISTAR MATERIAIS COM FILTROS E PAGINAÇÃO
+// Ex: GET /api/Materiais?titulo=Clean&tipo=Livro&ano=2008&pagina=1&quantidade=5
+[HttpGet]
+public IActionResult ObterTodos(
+    [FromQuery] string? titulo = null,
+    [FromQuery] string? tipo = null,
+    [FromQuery] int? ano = null,
+    [FromQuery] int pagina = 1,
+    [FromQuery] int quantidade = 10)
+{
+    if (!string.IsNullOrWhiteSpace(tipo) &&
+        !tipo.Equals("Livro", StringComparison.OrdinalIgnoreCase) &&
+        !tipo.Equals("Revista", StringComparison.OrdinalIgnoreCase))
     {
-        if (!string.IsNullOrWhiteSpace(tipo) &&
-            !tipo.Equals("Livro", StringComparison.OrdinalIgnoreCase) &&
-            !tipo.Equals("Revista", StringComparison.OrdinalIgnoreCase))
-        {
-            return BadRequest("Tipo de material inválido. Use 'Livro' ou 'Revista'.");
-        }
-
-        if (ano.HasValue && ano.Value <= 0)
-            return BadRequest("Ano de publicação inválido.");
-        
-         // VALIDAR PAGINAÇÃO
-        if (pagina < 1)
-            return BadRequest("A página deve ser maior ou igual a 1.");
-
-        if (quantidade < 1 || quantidade > 100)
-        {
-            return BadRequest("A quantidade deve estar entre 1 e 100.");
-        }
-
-        return Ok(_repository.ObterTodos(titulo, tipo, ano, pagina, quantidade));
+        return Problem(
+            detail: "Tipo de material inválido. Use 'Livro' ou 'Revista'.",
+            statusCode: 400,
+            title: "Dados inválidos"
+        );
     }
+
+    if (ano.HasValue && ano.Value <= 0)
+    {
+        return Problem(
+            detail: "Ano de publicação inválido.",
+            statusCode: 400,
+            title: "Dados inválidos"
+        );
+    }
+
+    // VALIDAR PAGINAÇÃO
+    if (pagina < 1)
+    {
+        return Problem(
+            detail: "A página deve ser maior ou igual a 1.",
+            statusCode: 400,
+            title: "Dados inválidos"
+        );
+    }
+
+    if (quantidade < 1 || quantidade > 100)
+    {
+        return Problem(
+            detail: "A quantidade deve estar entre 1 e 100.",
+            statusCode: 400,
+            title: "Dados inválidos"
+        );
+    }
+
+    return Ok(_repository.ObterTodos(titulo, tipo, ano, pagina, quantidade));
+}
+
 
     // BUSCAR MATERIAL PELO ID
     [HttpGet("{id:int}")]
@@ -64,7 +86,11 @@ public class MateriaisController : ControllerBase
     public IActionResult CadastrarLivro([FromBody] Livro livro)
     {
         if (string.IsNullOrWhiteSpace(livro.Titulo))
-            return BadRequest("O título é obrigatório.");
+            return Problem(
+                detail: "O título é obrigatório.",
+                statusCode: 400,
+                title: "Dados inválidos"
+            );
 
         if (livro.AnoPublicacao < 0)
             return BadRequest("Ano de publicação inválido.");

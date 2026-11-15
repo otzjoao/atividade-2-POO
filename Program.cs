@@ -5,6 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
+// Configuração padronizada de respostas de erro
+builder.Services.AddProblemDetails();
+
 // Configuração do Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -24,6 +27,9 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Tratamento centralizado de exceções
+app.UseExceptionHandler();
 
 app.UseSwagger();
 app.UseSwaggerUI();
